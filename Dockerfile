@@ -41,6 +41,9 @@ RUN pip3 install Pygments \
 #wolfram 
 RUN wget https://account.wolfram.com/download/public/wolfram-engine/desktop/LINUX && bash LINUX -- -auto -verbose && rm LINUX
 
+RUN mkdir /usr/share/texlive/texmf-dist/tex/latex/latexalpha2
+COPY sty/latexalpha2.sty usr/share/texlive/texmf-dist/tex/latex/latexalpha2
+
 #new user without privileges
 RUN groupadd -r newuser -g 1000 && useradd -u 1000 -r -g newuser -m -d /opt/newuser -s /sbin/nologin -c "NewUser" newuser && \
     chmod 755 /opt/newuser
