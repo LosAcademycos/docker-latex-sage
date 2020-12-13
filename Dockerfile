@@ -37,6 +37,9 @@ RUN pip3 install Pygments \
     && pip3 install seaborn \
     && pip3 install scipy \
     && pip3 install -U scikit-learn 
+    
+#wolfram 
+RUN wget https://account.wolfram.com/download/public/wolfram-engine/desktop/LINUX && bash LINUX -- -auto -verbose && rm LINUX
 
 #new user without privileges
 RUN groupadd -r newuser -g 1000 && useradd -u 1000 -r -g newuser -m -d /opt/newuser -s /sbin/nologin -c "NewUser" newuser && \
