@@ -26,8 +26,8 @@ RUN apt-get install -y texlive-full
 #sage and sagetex
 RUN apt-get install -y sagemath
 
-RUN mkdir /usr/share/texlive/texmf-dist/tex/latex/sagetex
-COPY sty/sagetex.sty usr/share/texlive/texmf-dist/tex/latex/sagetex
+RUN mkdir ../usr/share/texlive/texmf-dist/tex/latex/sagetex
+COPY sty/sagetex.sty ../usr/share/texlive/texmf-dist/tex/latex/sagetex
 
 #libraries python
 RUN pip3 install Pygments \
@@ -41,12 +41,21 @@ RUN pip3 install Pygments \
 #wolfram 
 RUN wget https://account.wolfram.com/download/public/wolfram-engine/desktop/LINUX && bash LINUX -- -auto -verbose && rm LINUX
 
-RUN mkdir /usr/share/texlive/texmf-dist/tex/latex/latexalpha2
-COPY sty/latexalpha2.sty usr/share/texlive/texmf-dist/tex/latex/latexalpha2
+RUN mkdir ../usr/share/texlive/texmf-dist/tex/latex/latexalpha2
+COPY sty/latexalpha2.sty ../newusr/share/texlive/texmf-dist/tex/latex/latexalpha2
 
+#r-rstudio server
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 \
+    && add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/' \
+    && apt-get -y update \
+    && apt-get install -y r-base \
+    && apt-get install -y gdebi-core \
+    && wget https://s3.amazonaws.com/rstudio-ide-build/server/bionic/amd64/rstudio-server-1.3.959-amd64.deb \
+    && gdebi --non-interactive rstudio-server-1.3.959-amd64.deb \
+    && rm rstudio-server-1.3.959-amd64.deb 
+    
 #new user without privileges
-RUN groupadd -r newuser -g 1000 && useradd -u 1000 -r -g newuser -m -d /opt/newuser -s /sbin/nologin -c "NewUser" newuser && \
-    chmod 755 /opt/newuser
+RUN groupadd -r newuser -g 1000 && useradd -u 1000 -r -g newuser -m newuser 
 
 #user default
 USER newuser
