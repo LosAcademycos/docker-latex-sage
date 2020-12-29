@@ -59,11 +59,24 @@ RUN pip3 install Pygments \
     && pip3 install scipy \
     && pip3 install -U scikit-learn \
     && pip3 install Django==3.1.4
+
+#correcting error sage in terminal rstudio
+#https://groups.google.com/g/sage-devel/c/tejOsRxfC9w/m/ctUTmZQIBAAJ
+RUN ln -s /usr/share/sagemath/bin/sage-env /bin/sage-env
     
 #new user with privileges
 RUN groupadd -r newuser -g 1000 && useradd -u 1000 -r -g newuser -m newuser \
     && adduser newuser sudo \
     && chmod 0440 ../etc/sudoers
+
+#locale config UTF8
+RUN apt-get update \
+    && apt-get install -y locales \
+    && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+    && locale-gen
+ENV LC_ALL en_US.UTF-8 
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en 
 
 #user default
 USER newuser
