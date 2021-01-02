@@ -57,8 +57,23 @@ RUN pip3 install Pygments \
     && pip3 install matplotlib \
     && pip3 install seaborn \
     && pip3 install scipy \
-    && pip3 install -U scikit-learn \
-    && pip3 install Django==3.1.4
+    && pip3 install -U scikit-learn 
+    
+#Django
+RUN pip3 install Django==3.1.4
+
+#jupyterlab
+RUN pip3 install jupyterlab
+
+#kernel R
+RUN apt-get install -y libgit2-dev \
+    && apt-get install -y libxml2 libxml2-dev \
+    && apt-get install -y libcurl4-openssl-dev \
+    && apt-get install -y libssl-dev \
+    && R -e 'install.packages("devtools")' \
+    && R -e 'install.packages("devtools")' \
+    && R -e 'devtools::install_github("IRkernel/IRkernel")' \
+    && R -e 'IRkernel::installspec()'
 
 #correcting error sage in terminal rstudio
 #https://groups.google.com/g/sage-devel/c/tejOsRxfC9w/m/ctUTmZQIBAAJ
