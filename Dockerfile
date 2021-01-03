@@ -65,15 +65,11 @@ RUN pip3 install Django==3.1.4
 #jupyterlab
 RUN pip3 install jupyterlab
 
-#kernel R
+#important for kernel R
 RUN apt-get install -y libgit2-dev \
     && apt-get install -y libxml2 libxml2-dev \
     && apt-get install -y libcurl4-openssl-dev \
-    && apt-get install -y libssl-dev \
-    && R -e 'install.packages("devtools")' \
-    && R -e 'install.packages("devtools")' \
-    && R -e 'devtools::install_github("IRkernel/IRkernel")' \
-    && R -e 'IRkernel::installspec()'
+    && apt-get install -y libssl-dev 
 
 #correcting error sage in terminal rstudio
 #https://groups.google.com/g/sage-devel/c/tejOsRxfC9w/m/ctUTmZQIBAAJ
@@ -83,7 +79,7 @@ RUN ln -s /usr/share/sagemath/bin/sage-env /bin/sage-env
 RUN groupadd -r newuser -g 1000 && useradd -u 1000 -r -g newuser -m newuser \
     && adduser newuser sudo \
     && chmod 0440 ../etc/sudoers
-
+    
 #locale config UTF8
 RUN apt-get update \
     && apt-get install -y locales \
