@@ -91,3 +91,5 @@ ENV LANGUAGE en_US:en
 
 #user default
 USER newuser
+
+WORKDIR /home/newuser
