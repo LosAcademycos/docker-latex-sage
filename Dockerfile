@@ -2,8 +2,6 @@ FROM ubuntu:focal
 
 MAINTAINER Brayan Camilo Riveros <camilor2611@gmail.com>
 
-WORKDIR /home
-
 #essentials 
 RUN apt-get -y update \
     && apt-get -y upgrade \
@@ -26,14 +24,14 @@ RUN apt-get install -y texlive-full
 #sage and sagetex
 RUN apt-get install -y sagemath
 
-RUN mkdir ../usr/share/texlive/texmf-dist/tex/latex/sagetex
-COPY sty/sagetex.sty ../usr/share/texlive/texmf-dist/tex/latex/sagetex
+RUN mkdir usr/share/texlive/texmf-dist/tex/latex/sagetex
+COPY sty/sagetex.sty usr/share/texlive/texmf-dist/tex/latex/sagetex
    
 #wolfram 
 RUN wget https://account.wolfram.com/download/public/wolfram-engine/desktop/LINUX && bash LINUX -- -auto -verbose && rm LINUX
 
-RUN mkdir ../usr/share/texlive/texmf-dist/tex/latex/latexalpha2
-COPY sty/latexalpha2.sty ../newusr/share/texlive/texmf-dist/tex/latex/latexalpha2
+RUN mkdir usr/share/texlive/texmf-dist/tex/latex/latexalpha2
+COPY sty/latexalpha2.sty newusr/share/texlive/texmf-dist/tex/latex/latexalpha2
 
 #r-rstudio server
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 \
@@ -44,6 +42,16 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD5
     && wget https://s3.amazonaws.com/rstudio-ide-build/server/bionic/amd64/rstudio-server-1.3.959-amd64.deb \
     && gdebi --non-interactive rstudio-server-1.3.959-amd64.deb \
     && rm rstudio-server-1.3.959-amd64.deb 
+
+#important for kernel R
+RUN apt-get install -y libgit2-dev \
+    && apt-get install -y libxml2 libxml2-dev \
+    && apt-get install -y libcurl4-openssl-dev \
+    && apt-get install -y libssl-dev 
+
+#correcting error sage in terminal rstudio
+#https://groups.google.com/g/sage-devel/c/tejOsRxfC9w/m/ctUTmZQIBAAJ
+RUN ln -s /usr/share/sagemath/bin/sage-env /bin/sage-env
 
 #git    
 RUN add-apt-repository ppa:git-core/ppa \
@@ -60,25 +68,21 @@ RUN pip3 install Pygments \
     && pip3 install -U scikit-learn 
     
 #Django
-RUN pip3 install Django==3.1.4
+#RUN pip3 install Django==3.1.4
 
 #jupyterlab
 RUN pip3 install jupyterlab
 
-#important for kernel R
-RUN apt-get install -y libgit2-dev \
-    && apt-get install -y libxml2 libxml2-dev \
-    && apt-get install -y libcurl4-openssl-dev \
-    && apt-get install -y libssl-dev 
-
-#correcting error sage in terminal rstudio
-#https://groups.google.com/g/sage-devel/c/tejOsRxfC9w/m/ctUTmZQIBAAJ
-RUN ln -s /usr/share/sagemath/bin/sage-env /bin/sage-env
+#ttyd
+RUN apt-get update && apt-get install -y autoconf automake curl cmake libtool make \
+    && git clone --depth=1 https://github.com/tsl0922/ttyd.git /ttyd \
+    && cd /ttyd && env BUILD_TARGET=x86_64 WITH_SSL=true ./scripts/cross-build.sh \
+    && cp /ttyd/build/ttyd /usr/bin/ttyd
     
 #new user with privileges
 RUN groupadd -r newuser -g 1000 && useradd -u 1000 -r -g newuser -m newuser \
     && adduser newuser sudo \
-    && chmod 0440 ../etc/sudoers
+    && chmod 0440 etc/sudoers
     
 #locale config UTF8
 RUN apt-get update \
